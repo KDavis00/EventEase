@@ -1,0 +1,55 @@
+﻿@page "/details/{EventId:int}"
+@using EventEase.Models
+@using EventEase.Services
+@inject NavigationManager NavManager
+
+<div class="centered-container">
+    <h2>@eventData?.Name</h2>
+
+    @if (eventData is null)
+    {
+        <p>Event not found.</p>
+    }
+    else
+    {
+        <p><strong>Date:</strong> @eventData.Date.ToShortDateString()</p>
+        <p><strong>Location:</strong> @eventData.Location</p>
+
+        <h4>RSVP</h4>
+        <EditForm Model="@rsvpName" OnValidSubmit="SubmitRSVP">
+            <InputText @bind-Value="rsvpName" placeholder="Your name" />
+            <button type="submit">RSVP</button>
+        </EditForm>
+
+        <h4>Attendees (@eventData.Attendees.Count)</h4>
+        <ul>
+            @foreach (var name in eventData.Attendees)
+            {
+                <li>@name</li>
+            }
+        </ul>
+    }
+</div>
+
+
+
+@code {
+    [Parameter] public int EventId { get; set; }
+
+    private EventModel? eventData;
+    private string rsvpName = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        eventData = EventService.Events.FirstOrDefault(e => e.Id == EventId);
+    }
+
+    private void SubmitRSVP()
+    {
+        if (!string.IsNullOrWhiteSpace(rsvpName) && !eventData!.Attendees.Contains(rsvpName))
+        {
+            eventData.Attendees.Add(rsvpName);
+            rsvpName = string.Empty;
+        }
+    }
+}

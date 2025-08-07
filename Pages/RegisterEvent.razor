@@ -1,0 +1,47 @@
+﻿@page "/register"
+@using EventEase.Models
+@using EventEase.Services
+
+@inject NavigationManager NavManager
+
+<h2>Create a New Event</h2>
+
+<EditForm Model="@newEvent" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Event Name:</label>
+        <InputText @bind-Value="newEvent.Name" />
+        <ValidationMessage For="@(() => newEvent.Name)" />
+    </div>
+
+    <div>
+        <label>Date:</label>
+        <InputDate @bind-Value="newEvent.Date" />
+        <ValidationMessage For="@(() => newEvent.Date)" />
+    </div>
+
+    <div>
+        <label>Location:</label>
+        <InputText @bind-Value="newEvent.Location" />
+        <ValidationMessage For="@(() => newEvent.Location)" />
+    </div>
+
+    <button type="submit">Add Event</button>
+</EditForm>
+
+@code {
+    private EventModel newEvent = new()
+    {
+        Date = DateTime.Today
+    };
+
+    private void HandleValidSubmit()
+    {
+        newEvent.Id = EventService.GetNextId();
+        EventService.Events.Add(newEvent);
+        NavManager.NavigateTo("/");
+    }
+}
+

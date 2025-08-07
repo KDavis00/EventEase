@@ -1,0 +1,11 @@
+﻿@page "/"
+@using EventEase.Models
+@using EventEase.Components
+@using EventEase.Services
+
+<h2>Upcoming Events</h2>
+
+@foreach (var evt in EventService.Events)
+{
+    <EventCard Event="evt" />
+}
